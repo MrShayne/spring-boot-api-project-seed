@@ -1,0 +1,13 @@
+# 所有环境通用的配置，放在这里
+spring:
+  profiles:
+    active: dev
+  mvc: # 404 交给异常处理器处理
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+
+
+jwt:
+  secret-key: E)H@McQfTjWnZr4
+  expire-length: 3600000 #1h

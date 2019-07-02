@@ -1,9 +1,14 @@
 import com.google.common.base.CaseFormat;
 import freemarker.template.TemplateExceptionHandler;
+import javassist.compiler.CodeGen;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.*;
 import org.mybatis.generator.internal.DefaultShellCallback;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,12 +21,14 @@ import static com.company.project.core.ProjectConstant.*;
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
+@Service
 public class CodeGenerator {
-    //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
-    private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "123456";
-    private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
+
+    // todo: JDBC配置，请修改为你项目的实际配置  无法从外面读取配置
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/pricetag_ota";
+    private static final String JDBC_USERNAME = "admin";
+    private static final String JDBC_PASSWORD = "90mysql.";
+    private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.cj.jdbc.Driver";
 
     private static final String PROJECT_PATH = System.getProperty("user.dir");//项目在硬盘上的基础路径
     private static final String TEMPLATE_FILE_PATH = PROJECT_PATH + "/src/test/resources/generator/template";//模板位置
@@ -33,11 +40,12 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_SERVICE_IMPL = packageConvertPath(SERVICE_IMPL_PACKAGE);//生成的Service实现存放路径
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
-    private static final String AUTHOR = "CodeGenerator";//@author
+    // todo: change author here
+    private static final String AUTHOR = "CodeGenerator";
     private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
-        genCode("输入表名");
+        genCode("user");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
@@ -175,13 +183,14 @@ public class CodeGenerator {
             data.put("modelNameUpperCamel", modelNameUpperCamel);
             data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
             data.put("basePackage", BASE_PACKAGE);
+            data.put("controllerPackage", CONTROLLER_PACKAGE);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
-            //cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
-            cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
+            cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
+//            cfg.getTemplate("controller.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
         } catch (Exception e) {
