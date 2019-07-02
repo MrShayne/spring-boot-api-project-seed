@@ -19,5 +19,6 @@ nbproject/private/
 build/
 nbbuild/
 dist/
+Logs/
 nbdist/
 .nb-gradle/
